@@ -1,0 +1,45 @@
+datasource db {
+        provider = "postgresql"
+        url      = env("DATABASE_URL")
+    }
+    
+    generator client {
+        provider = "prisma-client-js"
+    }
+
+    model User {
+        id        Int    @id @default(autoincrement())
+        username      String @db.VarChar(255)
+        email     String
+        password  String
+    }
+
+    model Currency {
+        id      Int   @id @default(autoincrement())
+        name    String
+        acronym String
+        books    Book[]
+    }
+    
+   model BookAuthors {
+        book      Book    @relation(fields: [bookId], references: [id])
+        bookId    Int
+        author    Author  @relation(fields: [authorId], references: [id])
+        authorId  Int
+    
+        @@id([bookId, authorId])
+    }
+    
+    model Author {
+        id            Int  @id @default(autoincrement())
+        name          String
+        BookAuthors   BookAuthors[]
+    }
+    
+    model Book {
+        id           Int  @id @default(autoincrement())
+        name         String
+        BookAuthors  BookAuthors[]
+        currency   Currency? @relation(fields: [currencyId], references: [id])
+        currencyId Int?
+    }
